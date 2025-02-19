@@ -20,11 +20,11 @@ interface InvestmentDialogProps {
   onOpenChange: (open: boolean) => void;
   onSubmit: (investment: {
     name: string;
-    profitOrLoss: "profit" | "loss";
+    profitOrLoss: "Profit" | "Loss";
     description: string;
     date: string;
     amount: number;
-    profitOrLossAmount: number; // New field for profit/loss amount
+    profitOrLossAmount: number;
   }) => void;
 }
 
@@ -35,10 +35,10 @@ export function InvestmentDialog({
 }: InvestmentDialogProps) {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState(0);
-  const [profitOrLoss, setProfitOrLoss] = useState<"profit" | "loss">("profit");
+  const [profitOrLoss, setProfitOrLoss] = useState<"Profit" | "Loss">("Profit");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
-  const [profitOrLossAmount, setProfitOrLossAmount] = useState(0); // New state for profit/loss amount
+  const [profitOrLossAmount, setProfitOrLossAmount] = useState(0);
 
   // State for modal messages
   const [successModalVisible, setSuccessModalVisible] = useState(false);
@@ -53,18 +53,18 @@ export function InvestmentDialog({
       description, 
       date, 
       amount, 
-      profitOrLossAmount // Include new field in submission
+      profitOrLossAmount
     };
     
     try {
-      await axios.post('http://localhost:5000/api/investments', investmentData); // Adjust endpoint if needed
+      await axios.post(`${process.env.API_URL || 'http://localhost:5000'}/api/investments`, investmentData);
       onSubmit(investmentData);
-      resetForm(); // Reset form fields after submission
-      setSuccessModalVisible(true); // Show success modal
+      resetForm();
+      setSuccessModalVisible(true);
     } catch (error) {
       console.error('Error saving investment:', error);
       setErrorMessage(error.response?.data?.message || 'An error occurred while saving investment.');
-      setErrorModalVisible(true); // Show error modal
+      setErrorModalVisible(true);
     }
   };
 
@@ -74,7 +74,7 @@ export function InvestmentDialog({
     setDescription('');
     setDate(new Date().toISOString().split('T')[0]);
     setAmount(0);
-    setProfitOrLossAmount(0); // Reset profit/loss amount
+    setProfitOrLossAmount(0);
   };
 
   return (
@@ -129,6 +129,7 @@ export function InvestmentDialog({
               value={amount}
               onChange={(e) => setAmount(Number(e.target.value))}
               placeholder="Investment Amount"
+              min={profitOrLoss === "loss" ? "-9999999" : "0"} // Allow negative values for loss
             />
           </div>
 
@@ -140,6 +141,7 @@ export function InvestmentDialog({
               value={profitOrLossAmount}
               onChange={(e) => setProfitOrLossAmount(Number(e.target.value))}
               placeholder="Enter profit or loss amount"
+              min={profitOrLoss === "loss" ? "-9999999" : "0"} // Allow negative values for loss
             />
           </div>
 

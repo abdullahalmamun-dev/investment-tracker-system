@@ -6,6 +6,7 @@ const investmentSchema = new mongoose.Schema({
   description: { type: String, trim: true },
   date: { type: Date, required: true },
   amount: { type: Number, required: true, min: 0 },
+  profitOrLossAmount: { type: Number, required: true, min: 0 }, // New field
   createdAt: { type: Date, default: Date.now },
 });
 

@@ -45,26 +45,10 @@ export function TransactionFilters() {
           </Select>
         </div>
 
-        <div className="space-y-2">
-          <Label>Category</Label>
-          <Select defaultValue="all">
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              <SelectItem value="salary">Salary</SelectItem>
-              <SelectItem value="rent">Rent</SelectItem>
-              <SelectItem value="food">Food</SelectItem>
-              <SelectItem value="transport">Transport</SelectItem>
-              <SelectItem value="entertainment">Entertainment</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
 
         <div className="space-y-2">
           <Label>Search</Label>
-          <Input type="search" placeholder="Search transactions..." />
+          <Input type="search" placeholder="Search investments..." />
         </div>
       </div>
     </Card>

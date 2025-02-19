@@ -30,12 +30,6 @@ const routes = [
     color: "text-violet-500",
   },
   {
-    label: "Investments",
-    icon: LineChart,
-    href: "/investments",
-    color: "text-pink-500",
-  },
-  {
     label: "Notifications",
     icon: Bell,
     href: "/notifications",

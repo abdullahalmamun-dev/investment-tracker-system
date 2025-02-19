@@ -16,30 +16,19 @@ import {
   Cell,
 } from "recharts";
 
-const balanceData = [
-  { month: "Jan", amount: 2400 },
-  { month: "Feb", amount: 1398 },
-  { month: "Mar", amount: 9800 },
-  { month: "Apr", amount: 3908 },
-  { month: "May", amount: 4800 },
-  { month: "Jun", amount: 3800 },
-];
+// Define the types for the data we're working with
+interface Investment {
+  _id: string;
+  profitOrLoss: "profit" | "loss";
+  description: string;
+  amount: number;
+  date: string;
+}
 
-const profitLossData = [
-  { month: "Jan", profitLoss: 200 },
-  { month: "Feb", profitLoss: -100 },
-  { month: "Mar", profitLoss: 1200 },
-  { month: "Apr", profitLoss: 500 },
-  { month: "May", profitLoss: -700 },
-  { month: "Jun", profitLoss: 300 },
-];
-
-const investmentData = [
-  { name: "Stock Market", value: 800 },
-  { name: "Restaurant Business", value: 300 },
-  { name: "Transport Business", value: 150 },
-  { name: "Others", value: 200 },
-];
+interface InvestmentData {
+  name: string;
+  value: number;
+}
 
 const COLORS = [
   "hsl(var(--chart-1))",
@@ -50,31 +39,85 @@ const COLORS = [
 ];
 
 export default function DashboardPage() {
-  const [totalProfit, setTotalProfit] = useState(0);
-  const [totalLoss, setTotalLoss] = useState(0);
+  const [totalProfit, setTotalProfit] = useState<number>(0);
+  const [totalLoss, setTotalLoss] = useState<number>(0);
+  const [totalInvestment, setTotalInvestment] = useState<number>(0);
+  const [currentBalance, setCurrentBalance] = useState<number>(0);
+  const [balanceData, setBalanceData] = useState<
+    { month: string; amount: number }[]
+  >([]);
+  const [profitLossData, setProfitLossData] = useState<
+    { month: string; profitLoss: number }[]
+  >([]);
+  const [investmentData, setInvestmentData] = useState<InvestmentData[]>([]);
 
   useEffect(() => {
-    const fetchSummary = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get("/api/investments");
+        const response = await axios.get<Investment[]>(
+          "http://localhost:5000/api/investments"
+        );
         const investments = response.data;
 
+        // Calculate total profit and loss
         const profit = investments
           .filter((inv) => inv.profitOrLoss === "profit")
-          .reduce((sum, inv) => sum + inv.amount, 0);
-
+          .reduce((sum, inv) => sum + inv.profitOrLossAmount, 0);
         const loss = investments
           .filter((inv) => inv.profitOrLoss === "loss")
-          .reduce((sum, inv) => sum + inv.amount, 0);
+          .reduce((sum, inv) => sum + Math.abs(inv.profitOrLossAmount), 0); // Only sum absolute values of losses
+        const investmentAmount = investments.reduce(
+          (sum, inv) => sum + inv.amount,
+          0
+        );
 
+        // Set dynamic data
         setTotalProfit(profit);
         setTotalLoss(loss);
+        setTotalInvestment(investmentAmount);
+        setCurrentBalance(profit + investmentAmount - loss);
+
+        // Prepare data for charts
+        const balanceData = investments.map((inv) => ({
+          month: new Date(inv.date).toLocaleString("default", {
+            month: "short",
+          }),
+          amount: inv.amount,
+        }));
+        setBalanceData(balanceData);
+
+        const profitLossData = investments.map((inv) => ({
+          month: new Date(inv.date).toLocaleString("default", {
+            month: "short",
+          }),
+          profitLoss:
+            inv.profitOrLoss === "profit"
+              ? inv.profitOrLossAmount
+              : -inv.profitOrLossAmount,
+        }));
+        setProfitLossData(profitLossData);
+
+        const investmentData = investments.reduce((acc, inv) => {
+          const category = inv.description || "Others"; // Use description or "Others" as fallback
+          if (!acc[category]) {
+            acc[category] = 0;
+          }
+          acc[category] += inv.amount;
+          return acc;
+        }, {});
+
+        setInvestmentData(
+          Object.keys(investmentData).map((key) => ({
+            name: key,
+            value: investmentData[key],
+          }))
+        );
       } catch (error) {
-        console.error("Error fetching summary:", error);
+        console.error("Error fetching investments:", error);
       }
     };
 
-    fetchSummary();
+    fetchData();
   }, []);
 
   return (
@@ -83,11 +126,15 @@ export default function DashboardPage() {
       <div className="grid gap-4 grid-cols-1 md:grid-cols-4">
         <Card className="p-4">
           <h2 className="text-lg font-semibold mb-2">Current Balance</h2>
-          <p className="text-3xl font-bold text-primary">$12,750</p>
+          <p className="text-3xl font-bold text-primary">
+            ${currentBalance.toFixed(2)}
+          </p>
         </Card>
         <Card className="p-4">
           <h2 className="text-lg font-semibold mb-2">Investment</h2>
-          <p className="text-3xl font-bold text-chart-1">$3,850</p>
+          <p className="text-3xl font-bold text-chart-1">
+            ${totalInvestment.toFixed(2)}
+          </p>
         </Card>
         <Card className="p-4">
           <h2 className="text-lg font-semibold mb-2">Profit</h2>
@@ -100,6 +147,7 @@ export default function DashboardPage() {
           <p className="text-3xl font-bold text-chart-2">
             ${totalLoss.toFixed(2)}
           </p>
+          {/* Display only the total loss */}
         </Card>
       </div>
 
@@ -120,22 +168,38 @@ export default function DashboardPage() {
         </Card>
 
         <Card className="p-4">
-          <h2 className="text-lg font-semibold mb-4">Profit and Loss Trend</h2>
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={profitLossData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Bar
-                  dataKey="profitLoss"
-                  fill={profitLossData[0].profitLoss >= 0 ? "green" : "red"}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
+  <h2 className="text-lg font-semibold mb-4">Profit and Loss Trend</h2>
+  <div className="h-[300px]">
+    <ResponsiveContainer width="100%" height="100%">
+      <BarChart data={profitLossData}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="month" />
+        <YAxis />
+        <Tooltip />
+        <Bar
+          dataKey="profitLoss"
+          // Customize the Bar color dynamically for each bar
+          fill="hsl(var(--chart-1))"
+          shape={(props) => {
+            const { x, y, width, height, value } = props;
+            const fillColor = value < 0 ? "green" : "green"; // Corrected check for negative values
+            console.log(value); // Debugging the value for each bar
+            return (
+              <rect
+                x={x}
+                y={y}
+                width={width}
+                height={height}
+                fill={fillColor}
+              />
+            );
+          }}
+        />
+      </BarChart>
+    </ResponsiveContainer>
+  </div>
+</Card>
+
 
         <Card className="p-4">
           <h2 className="text-lg font-semibold mb-4">
