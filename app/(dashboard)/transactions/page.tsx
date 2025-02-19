@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Filter } from "lucide-react";
-import { TransactionDialog } from "@/components/transactions/transaction-dialog";
+import { InvestmentDialog } from "@/components/transactions/transaction-dialog";
 import { TransactionList } from "@/components/transactions/transaction-list";
 import { TransactionFilters } from "@/components/transactions/transaction-filters";
 
@@ -58,7 +58,7 @@ export default function TransactionsPage() {
   return (
     <div className="h-full p-4 space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Investments & Profits</h1> {/* Updated title */}
+        <h1 className="text-2xl font-bold">Investments</h1> {/* Updated title */}
         <div className="flex gap-2">
           <Button
             variant="outline"
@@ -75,44 +75,11 @@ export default function TransactionsPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
-        <Card className="p-4">
-          <h2 className="text-lg font-semibold mb-2">Total Investment</h2> {/* Updated label */}
-          <p className="text-3xl font-bold text-chart-1">
-            ${transactions
-              .filter((t) => t.type === "investment") // updated filter condition
-              .reduce((sum, t) => sum + t.amount, 0)
-              .toLocaleString()}
-          </p>
-        </Card>
-        <Card className="p-4">
-          <h2 className="text-lg font-semibold mb-2">Total Loss</h2> {/* Updated label */}
-          <p className="text-3xl font-bold text-chart-2">
-            ${transactions
-              .filter((t) => t.type === "loss") // updated filter condition
-              .reduce((sum, t) => sum + t.amount, 0)
-              .toLocaleString()}
-          </p>
-        </Card>
-        <Card className="p-4">
-          <h2 className="text-lg font-semibold mb-2">Net Balance</h2>
-          <p className="text-3xl font-bold text-primary">
-            ${transactions
-              .reduce(
-                (sum, t) =>
-                  sum + (t.type === "investment" ? t.amount : -t.amount),
-                0
-              )
-              .toLocaleString()}
-          </p>
-        </Card>
-      </div>
-
       {showFilters && <TransactionFilters />}
 
       <TransactionList transactions={transactions} />
 
-      <TransactionDialog
+      <InvestmentDialog
         open={showNewTransaction}
         onOpenChange={setShowNewTransaction}
         onSubmit={addTransaction}

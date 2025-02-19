@@ -1,6 +1,8 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import {
   BarChart,
   Bar,
@@ -33,10 +35,9 @@ const profitLossData = [
 ];
 
 const investmentData = [
-  { name: "Rent", value: 800 },
-  { name: "Food", value: 300 },
-  { name: "Transport", value: 150 },
-  { name: "Entertainment", value: 100 },
+  { name: "Stock Market", value: 800 },
+  { name: "Restaurant Business", value: 300 },
+  { name: "Transport Business", value: 150 },
   { name: "Others", value: 200 },
 ];
 
@@ -49,10 +50,37 @@ const COLORS = [
 ];
 
 export default function DashboardPage() {
+  const [totalProfit, setTotalProfit] = useState(0);
+  const [totalLoss, setTotalLoss] = useState(0);
+
+  useEffect(() => {
+    const fetchSummary = async () => {
+      try {
+        const response = await axios.get("/api/investments");
+        const investments = response.data;
+
+        const profit = investments
+          .filter((inv) => inv.profitOrLoss === "profit")
+          .reduce((sum, inv) => sum + inv.amount, 0);
+
+        const loss = investments
+          .filter((inv) => inv.profitOrLoss === "loss")
+          .reduce((sum, inv) => sum + inv.amount, 0);
+
+        setTotalProfit(profit);
+        setTotalLoss(loss);
+      } catch (error) {
+        console.error("Error fetching summary:", error);
+      }
+    };
+
+    fetchSummary();
+  }, []);
+
   return (
     <div className="h-full p-4 space-y-4">
       <h1 className="text-2xl font-bold">Financial Overview</h1>
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-4">
         <Card className="p-4">
           <h2 className="text-lg font-semibold mb-2">Current Balance</h2>
           <p className="text-3xl font-bold text-primary">$12,750</p>
@@ -62,8 +90,16 @@ export default function DashboardPage() {
           <p className="text-3xl font-bold text-chart-1">$3,850</p>
         </Card>
         <Card className="p-4">
-          <h2 className="text-lg font-semibold mb-2">Profit and Loss</h2>
-          <p className="text-3xl font-bold text-chart-2">$1,550</p>
+          <h2 className="text-lg font-semibold mb-2">Profit</h2>
+          <p className="text-3xl font-bold text-chart-4">
+            ${totalProfit.toFixed(2)}
+          </p>
+        </Card>
+        <Card className="p-4">
+          <h2 className="text-lg font-semibold mb-2">Loss</h2>
+          <p className="text-3xl font-bold text-chart-2">
+            ${totalLoss.toFixed(2)}
+          </p>
         </Card>
       </div>
 
@@ -102,7 +138,9 @@ export default function DashboardPage() {
         </Card>
 
         <Card className="p-4">
-          <h2 className="text-lg font-semibold mb-4">Investment Distribution</h2>
+          <h2 className="text-lg font-semibold mb-4">
+            Investment Distribution
+          </h2>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>

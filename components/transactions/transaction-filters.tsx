@@ -39,8 +39,8 @@ export function TransactionFilters() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All</SelectItem>
-              <SelectItem value="income">Income</SelectItem>
-              <SelectItem value="expense">Expense</SelectItem>
+              <SelectItem value="income">Profit</SelectItem>
+              <SelectItem value="expense">Loss</SelectItem>
             </SelectContent>
           </Select>
         </div>

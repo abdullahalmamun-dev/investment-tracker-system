@@ -1,68 +1,26 @@
 const express = require('express');
-const Transaction = require('../models/Transaction');
 const router = express.Router();
+const Investment = require('../models/Transaction');
 
-// Get all transactions for user
-router.get('/', async (req, res) => {
-  try {
-    const transactions = await Transaction.find({ userId: req.user.userId })
-      .sort({ date: -1 });
-    res.json(transactions);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching transactions', error: error.message });
-  }
-});
-
-// Create new transaction
+// Create a new investment
 router.post('/', async (req, res) => {
   try {
-    const { type, amount, category, description, date } = req.body;
-    const transaction = new Transaction({
-      userId: req.user.userId,
-      type,
-      amount,
-      category,
-      description,
-      date: date || new Date()
-    });
-    await transaction.save();
-    res.status(201).json(transaction);
+    const { name, profitOrLoss, description, date, amount } = req.body;
+    const investment = new Investment({ name, profitOrLoss, description, date, amount });
+    await investment.save();
+    res.status(201).json(investment);
   } catch (error) {
-    res.status(500).json({ message: 'Error creating transaction', error: error.message });
+    res.status(500).json({ message: 'Error creating investment', error });
   }
 });
 
-// Update transaction
-router.put('/:id', async (req, res) => {
+// Fetch all investments
+router.get('/', async (req, res) => {
   try {
-    const { type, amount, category, description, date } = req.body;
-    const transaction = await Transaction.findOneAndUpdate(
-      { _id: req.params.id, userId: req.user.userId },
-      { type, amount, category, description, date },
-      { new: true }
-    );
-    if (!transaction) {
-      return res.status(404).json({ message: 'Transaction not found' });
-    }
-    res.json(transaction);
+    const investments = await Investment.find().sort({ date: -1 });
+    res.json(investments);
   } catch (error) {
-    res.status(500).json({ message: 'Error updating transaction', error: error.message });
-  }
-});
-
-// Delete transaction
-router.delete('/:id', async (req, res) => {
-  try {
-    const transaction = await Transaction.findOneAndDelete({
-      _id: req.params.id,
-      userId: req.user.userId
-    });
-    if (!transaction) {
-      return res.status(404).json({ message: 'Transaction not found' });
-    }
-    res.json({ message: 'Transaction deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error deleting transaction', error: error.message });
+    res.status(500).json({ message: 'Error fetching investments', error });
   }
 });
 

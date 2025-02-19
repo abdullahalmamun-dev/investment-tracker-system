@@ -24,7 +24,7 @@ const routes = [
     color: "text-sky-500",
   },
   {
-    label: "Income & Expenses",
+    label: "Profit & Loss",
     icon: Wallet,
     href: "/transactions",
     color: "text-violet-500",
@@ -34,12 +34,6 @@ const routes = [
     icon: LineChart,
     href: "/investments",
     color: "text-pink-500",
-  },
-  {
-    label: "Budget",
-    icon: PiggyBank,
-    href: "/budget",
-    color: "text-orange-500",
   },
   {
     label: "Notifications",
@@ -53,12 +47,6 @@ const routes = [
     href: "/reports",
     color: "text-rose-500",
   },
-  {
-    label: "Settings",
-    icon: Settings,
-    href: "/settings",
-    color: "text-gray-500",
-  },
 ];
 
 export function Sidebar() {
@@ -68,7 +56,7 @@ export function Sidebar() {
   return (
     <>
       <div className="flex md:hidden items-center justify-between p-4 border-b">
-        <h1 className="text-xl font-bold">Student Budget Tracker</h1>
+        <h1 className="text-xl font-bold">Investment Tracker</h1>
         <Button
           variant="ghost"
           size="icon"
@@ -85,7 +73,7 @@ export function Sidebar() {
       >
         <div className="px-3 py-2 flex-1">
           <h2 className="hidden md:block text-lg font-semibold tracking-tight mb-4">
-          Student Budget Tracker
+            Investment Tracker
           </h2>
           <div className="space-y-1">
             {routes.map((route) => (
