@@ -32,6 +32,30 @@ router.post("/", async (req, res) => {
   }
 });
 
+app.get('/api/investments/:id/pdf', async (req, res) => {
+  const investmentId = req.params.id;
+
+  const investment = await Investment.findById(investmentId);
+  
+  if (!investment) return res.status(404).send('Investment not found');
+
+  const doc = new pdfkit();
+  
+  let filename = `Investment_${investmentId}.pdf`;
+  
+  res.setHeader('Content-disposition', 'attachment; filename=' + filename);
+  res.setHeader('Content-type', 'application/pdf');
+
+  doc.text(`Investment Name: ${investment.name}`, { align: 'left' });
+  doc.text(`Date: ${new Date(investment.date).toLocaleDateString()}`, { align: 'left' });
+  doc.text(`Description: ${investment.description}`, { align: 'left' });
+  doc.text(`Profit/Loss Amount: $${investment.profitOrLossAmount}`, { align: 'left' });
+  doc.text(`Total Amount Invested: $${investment.amount}`, { align: 'left' });
+
+  doc.pipe(res);
+  
+  doc.end();
+});
 
 // Fetch all investments
 router.get("/", async (req, res) => {
