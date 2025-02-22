@@ -32,7 +32,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-app.get('/api/investments/:id/pdf', async (req, res) => {
+router.get('/api/investments/:id/pdf', async (req, res) => {
   const investmentId = req.params.id;
 
   const investment = await Investment.findById(investmentId);

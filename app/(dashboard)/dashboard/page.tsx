@@ -14,6 +14,7 @@ import {
   PieChart,
   Pie,
   Cell,
+  BarProps, // Import BarProps from recharts
 } from "recharts";
 
 // Define the types for the data we're working with
@@ -23,6 +24,7 @@ interface Investment {
   description: string;
   amount: number;
   date: string;
+  profitOrLossAmount: number; // Added property
 }
 
 interface InvestmentData {
@@ -30,13 +32,34 @@ interface InvestmentData {
   value: number;
 }
 
+// Define a type for the accumulator in reduce
+interface InvestmentCategoryAccumulator {
+  [key: string]: number; // Dynamic keys of type string with values of type number
+}
+
 const COLORS = [
   "hsl(var(--chart-1))",
   "hsl(var(--chart-2))",
   "hsl(var(--chart-3))",
   "hsl(var(--chart-4))",
-  "hsl(var(--chart-5))",
 ];
+
+// Custom shape component for bars
+const CustomBarShape = (props: BarProps) => {
+  const { x, y, width, height, payload } = props; // Access props directly
+  const value = payload.profitLoss; // Get the value from payload
+  const fillColor = value < 0 ? "red" : "green"; // Determine color based on value
+
+  return (
+    <rect
+      x={x}
+      y={y}
+      width={width}
+      height={height}
+      fill={fillColor}
+    />
+  );
+};
 
 export default function DashboardPage() {
   const [totalProfit, setTotalProfit] = useState<number>(0);
@@ -97,7 +120,8 @@ export default function DashboardPage() {
         }));
         setProfitLossData(profitLossData);
 
-        const investmentData = investments.reduce((acc, inv) => {
+        // Update this part to define the accumulator type correctly
+        const investmentData = investments.reduce<InvestmentCategoryAccumulator>((acc, inv) => {
           const category = inv.description || "Others"; // Use description or "Others" as fallback
           if (!acc[category]) {
             acc[category] = 0;
@@ -147,7 +171,6 @@ export default function DashboardPage() {
           <p className="text-3xl font-bold text-chart-2">
             ${totalLoss.toFixed(2)}
           </p>
-          {/* Display only the total loss */}
         </Card>
       </div>
 
@@ -168,43 +191,26 @@ export default function DashboardPage() {
         </Card>
 
         <Card className="p-4">
-  <h2 className="text-lg font-semibold mb-4">Profit and Loss Trend</h2>
-  <div className="h-[300px]">
-    <ResponsiveContainer width="100%" height="100%">
-      <BarChart data={profitLossData}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="month" />
-        <YAxis />
-        <Tooltip />
-        <Bar
-          dataKey="profitLoss"
-          // Customize the Bar color dynamically for each bar
-          fill="hsl(var(--chart-1))"
-          shape={(props) => {
-            const { x, y, width, height, value } = props;
-            const fillColor = value < 0 ? "green" : "green"; // Corrected check for negative values
-            console.log(value); // Debugging the value for each bar
-            return (
-              <rect
-                x={x}
-                y={y}
-                width={width}
-                height={height}
-                fill={fillColor}
-              />
-            );
-          }}
-        />
-      </BarChart>
-    </ResponsiveContainer>
-  </div>
-</Card>
-
+          <h2 className="text-lg font-semibold mb-4">Profit and Loss Trend</h2>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={profitLossData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Bar
+                  dataKey="profitLoss"
+                  fill="hsl(var(--chart-1))"
+                  shape={<CustomBarShape />} // Use CustomBarShape component here
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
 
         <Card className="p-4">
-          <h2 className="text-lg font-semibold mb-4">
-            Investment Distribution
-          </h2>
+          <h2 className="text-lg font-semibold mb-4">Investment Distribution</h2>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -221,10 +227,7 @@ export default function DashboardPage() {
                   dataKey="value"
                 >
                   {investmentData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
                 <Tooltip />
