@@ -10,12 +10,15 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(express.json());
+// Update CORS configuration to include DELETE method
 app.use(cors({
   origin: 'http://localhost:3000',
-  methods: ['GET', 'PUT', 'POST'],
+  methods: ['GET', 'PUT', 'POST', 'DELETE'], // Add DELETE here
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+app.use(express.json());
+
 
 app.use('/api/profile', profileRouter);
 app.use("/api/investments", investmentRoutes);

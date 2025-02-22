@@ -137,7 +137,7 @@ const ProfilePage = () => {
                 {...register('email', { 
                   required: 'Email is required',
                   pattern: {
-                    value: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+                    value:  /^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/,
                     message: 'Invalid email address'
                   }
                 })} 

@@ -17,7 +17,7 @@ const profileSchema = new mongoose.Schema({
       type: String,
       required: true,
       unique: true,
-      match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Invalid email format']
+      match: [ /^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/, 'Invalid email format']
     },
     profilePicture: {
       type: String,
