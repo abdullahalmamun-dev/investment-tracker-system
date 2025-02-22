@@ -1,11 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import axios from 'axios';
+import axios from "axios";
 
 import {
   Select,
@@ -47,32 +52,38 @@ export function InvestmentDialog({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const investmentData = { 
-      name, 
-      profitOrLoss, 
-      description, 
-      date, 
-      amount, 
-      profitOrLossAmount
+    const investmentData = {
+      name,
+      profitOrLoss,
+      description,
+      date,
+      amount,
+      profitOrLossAmount,
     };
-    
+
     try {
-      await axios.post(`${process.env.API_URL || 'http://localhost:5000'}/api/investments`, investmentData);
+      await axios.post(
+        `${process.env.API_URL || "http://localhost:5000"}/api/investments`,
+        investmentData
+      );
       onSubmit(investmentData);
       resetForm();
       setSuccessModalVisible(true);
     } catch (error) {
-      console.error('Error saving investment:', error);
-      setErrorMessage(error.response?.data?.message || 'An error occurred while saving investment.');
+      console.error("Error saving investment:", error);
+      setErrorMessage(
+        error.response?.data?.message ||
+          "An error occurred while saving investment."
+      );
       setErrorModalVisible(true);
     }
   };
 
   const resetForm = () => {
-    setName('');
-    setProfitOrLoss('profit');
-    setDescription('');
-    setDate(new Date().toISOString().split('T')[0]);
+    setName("");
+    setProfitOrLoss("Profit");
+    setDescription("");
+    setDate(new Date().toISOString().split("T")[0]);
     setAmount(0);
     setProfitOrLossAmount(0);
   };
@@ -99,7 +110,9 @@ export function InvestmentDialog({
             <Label>Profit or Loss</Label>
             <Select
               value={profitOrLoss}
-              onValueChange={(value: "profit" | "loss") => setProfitOrLoss(value)}
+              onValueChange={(value: "profit" | "loss") =>
+                setProfitOrLoss(value)
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select profit or loss" />
@@ -157,7 +170,11 @@ export function InvestmentDialog({
 
           {/* Actions */}
           <div className="flex justify-end space-x-2">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Cancel
             </Button>
             <Button type="submit">Add Investment</Button>
@@ -166,26 +183,42 @@ export function InvestmentDialog({
 
         {/* Success Modal */}
         {successModalVisible && (
-          <Dialog open={successModalVisible} onOpenChange={() => setSuccessModalVisible(false)}>
+          <Dialog
+            open={successModalVisible}
+            onOpenChange={() => setSuccessModalVisible(false)}
+          >
             <DialogContent className="sm:max-w-[300px]">
               <DialogHeader>
                 <DialogTitle>Success!</DialogTitle>
               </DialogHeader>
               <p>Your investment has been added successfully.</p>
-              <Button variant="outline" onClick={() => setSuccessModalVisible(false)}>Close</Button>
+              <Button
+                variant="outline"
+                onClick={() => setSuccessModalVisible(false)}
+              >
+                Close
+              </Button>
             </DialogContent>
           </Dialog>
         )}
 
         {/* Error Modal */}
         {errorModalVisible && (
-          <Dialog open={errorModalVisible} onOpenChange={() => setErrorModalVisible(false)}>
+          <Dialog
+            open={errorModalVisible}
+            onOpenChange={() => setErrorModalVisible(false)}
+          >
             <DialogContent className="sm:max-w-[300px]">
               <DialogHeader>
                 <DialogTitle>Error!</DialogTitle>
               </DialogHeader>
               <p>{errorMessage}</p>
-              <Button variant="outline" onClick={() => setErrorModalVisible(false)}>Close</Button>
+              <Button
+                variant="outline"
+                onClick={() => setErrorModalVisible(false)}
+              >
+                Close
+              </Button>
             </DialogContent>
           </Dialog>
         )}
