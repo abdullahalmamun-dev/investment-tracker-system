@@ -4,12 +4,9 @@ import { cn } from "@/lib/utils";
 import {
   BarChart3,
   Wallet,
-  PiggyBank,
-  LineChart,
-  Bell,
   FileText,
-  Settings,
   Menu,
+  User
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -34,6 +31,12 @@ const routes = [
     icon: FileText,
     href: "/reports",
     color: "text-rose-500",
+  },
+  {
+    label: "Profile", // New Profile route
+    icon: User, // Profile icon
+    href: "/profile", // Add the href for the profile page
+    color: "text-teal-500", // Chosen color: teal for profile
   },
 ];
 

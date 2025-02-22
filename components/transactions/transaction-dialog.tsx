@@ -40,7 +40,7 @@ export function InvestmentDialog({
 }: InvestmentDialogProps) {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState(0);
-  const [profitOrLoss, setProfitOrLoss] = useState<"Profit" | "Loss">("Profit");
+  const [profitOrLoss, setProfitOrLoss] = useState<"Profit" | "loss">("Profit");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [profitOrLossAmount, setProfitOrLossAmount] = useState(0);
