@@ -2,17 +2,27 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Button } from '../ui/button';
-import { InvestmentEditDialog } from './InvestmentEditDialog'; // Import the modal component
+import { InvestmentEditDialog } from './InvestmentEditDialog'; 
+
+interface Investment {
+  _id: string;
+  name: string;
+  profitOrLoss: string;
+  description: string;
+  date: string;
+  amount: number;
+  profitOrLossAmount: number;
+}
 
 export function TransactionList() {
-  const [investments, setInvestments] = useState([]);
-  const [selectedInvestment, setSelectedInvestment] = useState(null); // Track selected investment for editing
-  const [editModalOpen, setEditModalOpen] = useState(false); // Control modal visibility
+  const [investments, setInvestments] = useState<Investment[]>([]);
+  const [selectedInvestment, setSelectedInvestment] = useState<Investment | null>(null); 
+  const [editModalOpen, setEditModalOpen] = useState(false); 
   
   useEffect(() => {
     const fetchInvestments = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/investments');
+        const response = await axios.get<Investment[]>('http://localhost:5000/api/investments');
         setInvestments(response.data);
       } catch (error) {
         console.error('Error fetching investments:', error);
@@ -22,7 +32,7 @@ export function TransactionList() {
     fetchInvestments();
   }, []);
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: string) => {
     try {
       await axios.delete(`http://localhost:5000/api/investments/${id}`);
       setInvestments(investments.filter((investment) => investment._id !== id));
@@ -31,16 +41,15 @@ export function TransactionList() {
     }
   };
 
-  const handleEdit = (investment) => {
-    console.log('Editing investment with ID:', investment._id); // Check the ID
-    setSelectedInvestment(investment); // Set the investment to edit
-    setEditModalOpen(true); // Open the modal
+  const handleEdit = (investment: Investment) => {
+    console.log('Editing investment with ID:', investment._id);
+    setSelectedInvestment(investment); 
+    setEditModalOpen(true);
   };
   
-
   const handleModalClose = () => {
-    setEditModalOpen(false); // Close the modal
-    setSelectedInvestment(null); // Reset selected investment
+    setEditModalOpen(false); 
+    setSelectedInvestment(null); 
   };
 
   return (
@@ -79,18 +88,17 @@ export function TransactionList() {
         </TableBody>
       </Table>
 
-      {/* Edit Modal */}
       {selectedInvestment && (
         <InvestmentEditDialog
           open={editModalOpen}
           onClose={handleModalClose}
           investment={selectedInvestment}
-          onUpdate={(updatedInvestment) => {
-            // Update the investment list in frontend
+          onUpdate={(updatedInvestment: Investment) => {
+
             setInvestments(investments.map((investment) =>
               investment._id === updatedInvestment._id ? updatedInvestment : investment
             ));
-            handleModalClose(); // Close the modal
+            handleModalClose(); 
           }}
         />
       )}
