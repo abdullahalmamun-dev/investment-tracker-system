@@ -22,7 +22,7 @@ export function TransactionList() {
   useEffect(() => {
     const fetchInvestments = async () => {
       try {
-        const response = await axios.get<Investment[]>('http://go04g4woko84gssww4so4oss.92.112.181.229.sslip.io/api/investments');
+        const response = await axios.get<Investment[]>('https://go04g4woko84gssww4so4oss.92.112.181.229.sslip.io/api/investments');
         setInvestments(response.data);
       } catch (error) {
         console.error('Error fetching investments:', error);
@@ -34,7 +34,7 @@ export function TransactionList() {
 
   const handleDelete = async (id: string) => {
     try {
-      await axios.delete(`http://go04g4woko84gssww4so4oss.92.112.181.229.sslip.io/api/investments/${id}`);
+      await axios.delete(`https://go04g4woko84gssww4so4oss.92.112.181.229.sslip.io/api/investments/${id}`);
       setInvestments(investments.filter((investment) => investment._id !== id));
     } catch (error) {
       console.error('Error deleting investment:', error);

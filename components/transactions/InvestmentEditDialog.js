@@ -31,7 +31,7 @@ export function InvestmentEditDialog({ open, onClose, investment, onUpdate }) {
       const updatedInvestment = { name, profitOrLoss, description, date, amount, profitOrLossAmount };
       
       // Make sure the URL includes the investment ID
-      const response = await axios.put(`http://go04g4woko84gssww4so4oss.92.112.181.229.sslip.io/api/investments/${investment._id}`, updatedInvestment);
+      const response = await axios.put(`https://go04g4woko84gssww4so4oss.92.112.181.229.sslip.io/api/investments/${investment._id}`, updatedInvestment);
       
       onUpdate(response.data); // Update the investment on the parent component
     } catch (error) {

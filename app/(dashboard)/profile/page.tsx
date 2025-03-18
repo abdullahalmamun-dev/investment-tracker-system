@@ -24,7 +24,7 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
 
   const api = axios.create({
-    baseURL: 'http://go04g4woko84gssww4so4oss.92.112.181.229.sslip.io/' 
+    baseURL: 'https://go04g4woko84gssww4so4oss.92.112.181.229.sslip.io/' 
   });
   
   useEffect(() => {

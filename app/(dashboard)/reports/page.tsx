@@ -21,7 +21,7 @@ const Report = () => {
   useEffect(() => {
     const fetchInvestments = async () => {
       try {
-        const response = await axios.get<Investment[]>("http://go04g4woko84gssww4so4oss.92.112.181.229.sslip.io/api/investments");
+        const response = await axios.get<Investment[]>("https://go04g4woko84gssww4so4oss.92.112.181.229.sslip.io/api/investments");
         setInvestments(response.data);
       } catch (error) {
         console.error("Error fetching investments:", error);

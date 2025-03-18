@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://go04g4woko84gssww4so4oss.92.112.181.229.sslip.io/api',
+  baseURL: 'https://go04g4woko84gssww4so4oss.92.112.181.229.sslip.io/api',
 });
 
 // Add token to requests
