@@ -40,17 +40,16 @@ export function InvestmentDialog({
 }: InvestmentDialogProps) {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState(0);
-  const [profitOrLoss, setProfitOrLoss] = useState<"Profit" | "loss">("Profit");
+  const [profitOrLoss, setProfitOrLoss] = useState<"Profit" | "Loss">("Profit");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [profitOrLossAmount, setProfitOrLossAmount] = useState(0);
 
-  // State for modal messages
   const [successModalVisible, setSuccessModalVisible] = useState(false);
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const investmentData = {
       name,
@@ -69,7 +68,7 @@ export function InvestmentDialog({
       onSubmit(investmentData);
       resetForm();
       setSuccessModalVisible(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving investment:", error);
       setErrorMessage(
         error.response?.data?.message ||
@@ -95,7 +94,6 @@ export function InvestmentDialog({
           <DialogTitle>Add New Investment</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Investment Name */}
           <div className="space-y-2">
             <Label>Investment Name</Label>
             <Input
@@ -105,12 +103,11 @@ export function InvestmentDialog({
             />
           </div>
 
-          {/* Profit or Loss */}
           <div className="space-y-2">
             <Label>Profit or Loss</Label>
             <Select
               value={profitOrLoss}
-              onValueChange={(value: "profit" | "loss") =>
+              onValueChange={(value: "Profit" | "Loss") =>
                 setProfitOrLoss(value)
               }
             >
@@ -118,13 +115,12 @@ export function InvestmentDialog({
                 <SelectValue placeholder="Select profit or loss" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="profit">Profit</SelectItem>
-                <SelectItem value="loss">Loss</SelectItem>
+                <SelectItem value="Profit">Profit</SelectItem>
+                <SelectItem value="Loss">Loss</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          {/* Description */}
           <div className="space-y-2">
             <Label>Description</Label>
             <Input
@@ -134,7 +130,6 @@ export function InvestmentDialog({
             />
           </div>
 
-          {/* Amount */}
           <div className="space-y-2">
             <Label>Amount</Label>
             <Input
@@ -142,11 +137,10 @@ export function InvestmentDialog({
               value={amount}
               onChange={(e) => setAmount(Number(e.target.value))}
               placeholder="Investment Amount"
-              min={profitOrLoss === "loss" ? "-9999999" : "0"} // Allow negative values for loss
+              min={profitOrLoss === "Loss" ? "-9999999" : "0"} // Allow negative values for loss
             />
           </div>
 
-          {/* Profit or Loss Amount */}
           <div className="space-y-2">
             <Label>Profit or Loss Amount</Label>
             <Input
@@ -154,11 +148,10 @@ export function InvestmentDialog({
               value={profitOrLossAmount}
               onChange={(e) => setProfitOrLossAmount(Number(e.target.value))}
               placeholder="Enter profit or loss amount"
-              min={profitOrLoss === "loss" ? "-9999999" : "0"} // Allow negative values for loss
+              min={profitOrLoss === "Loss" ? "-9999999" : "0"} // Allow negative values for loss
             />
           </div>
 
-          {/* Date */}
           <div className="space-y-2">
             <Label>Date</Label>
             <Input
@@ -168,7 +161,6 @@ export function InvestmentDialog({
             />
           </div>
 
-          {/* Actions */}
           <div className="flex justify-end space-x-2">
             <Button
               type="button"
@@ -181,7 +173,6 @@ export function InvestmentDialog({
           </div>
         </form>
 
-        {/* Success Modal */}
         {successModalVisible && (
           <Dialog
             open={successModalVisible}
@@ -202,7 +193,6 @@ export function InvestmentDialog({
           </Dialog>
         )}
 
-        {/* Error Modal */}
         {errorModalVisible && (
           <Dialog
             open={errorModalVisible}
