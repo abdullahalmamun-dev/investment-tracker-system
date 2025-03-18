@@ -1,4 +1,3 @@
-// src/Report.tsx
 "use client";
 
 import { useEffect, useState } from "react";

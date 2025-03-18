@@ -4,17 +4,48 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Filter } from "lucide-react";
 import { InvestmentDialog } from "@/components/transactions/transaction-dialog";
-import { TransactionList } from "@/components/transactions/transaction-list";
 import { TransactionFilters } from "@/components/transactions/transaction-filters";
 
 export type Transaction = {
   id: string;
-  type: "investment" | "profit" | "loss"; // updated types
+  type: "investment" | "profit" | "loss";
   amount: number;
   category: string;
   description: string;
   date: string;
 };
+
+interface TransactionListProps {
+  transactions: Transaction[];
+}
+
+function TransactionList({ transactions }: TransactionListProps) {
+  return (
+    <div className="space-y-4">
+      {transactions.map((transaction) => (
+        <div
+          key={transaction.id}
+          className="border p-4 rounded-lg bg-card"
+        >
+          <div className="flex justify-between">
+            <span className="font-medium">{transaction.category}</span>
+            <span className={
+              transaction.type === "loss"
+                ? "text-red-500"
+                : transaction.type === "profit"
+                  ? "text-green-500"
+                  : "text-blue-500"
+            }>
+              {transaction.type === "loss" ? "-" : "+"} ${transaction.amount}
+            </span>
+          </div>
+          <div className="text-sm text-muted-foreground">{transaction.description}</div>
+          <div className="text-xs text-muted-foreground mt-2">{transaction.date}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function TransactionsPage() {
   const [showNewTransaction, setShowNewTransaction] = useState(false);
@@ -22,7 +53,7 @@ export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([
     {
       id: "1",
-      type: "investment", // changed from "income" to "investment"
+      type: "investment",
       amount: 2000,
       category: "Salary",
       description: "Monthly salary",
@@ -30,7 +61,7 @@ export default function TransactionsPage() {
     },
     {
       id: "2",
-      type: "loss", // changed from "expense" to "loss"
+      type: "loss",
       amount: 800,
       category: "Rent",
       description: "Monthly rent",
@@ -38,7 +69,7 @@ export default function TransactionsPage() {
     },
     {
       id: "3",
-      type: "loss", // changed from "expense" to "loss"
+      type: "loss",
       amount: 50,
       category: "Groceries",
       description: "Weekly groceries",
@@ -46,7 +77,28 @@ export default function TransactionsPage() {
     },
   ]);
 
-  const addTransaction = (transaction: Omit<Transaction, "id">) => {
+  const addTransaction = (investment: { 
+    name: string; 
+    profitOrLoss: "Profit" | "Loss"; 
+    description: string; 
+    date: string; 
+    amount: number; 
+    profitOrLossAmount: number; 
+  }) => {
+    const transaction: Omit<Transaction, "id"> = {
+      type: investment.profitOrLoss === "Profit" 
+        ? "profit" 
+        : investment.profitOrLoss === "Loss" 
+          ? "loss" 
+          : "investment",
+      amount: investment.profitOrLoss === "Profit" || investment.profitOrLoss === "Loss" 
+        ? investment.profitOrLossAmount 
+        : investment.amount,
+      category: investment.name,
+      description: investment.description,
+      date: investment.date,
+    };
+
     const newTransaction = {
       ...transaction,
       id: Math.random().toString(36).substr(2, 9),
@@ -57,7 +109,7 @@ export default function TransactionsPage() {
   return (
     <div className="h-full p-4 space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Investments</h1> {/* Updated title */}
+        <h1 className="text-2xl font-bold">Investments</h1>
         <div className="flex gap-2">
           <Button
             variant="outline"
