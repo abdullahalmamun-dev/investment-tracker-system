@@ -62,7 +62,7 @@ export function InvestmentDialog({
 
     try {
       await axios.post(
-        `${process.env.API_URL || "http://localhost:5000"}/api/investments`,
+        `${process.env.API_URL || "http://go04g4woko84gssww4so4oss.92.112.181.229.sslip.io"}/api/investments`,
         investmentData
       );
       onSubmit(investmentData);
