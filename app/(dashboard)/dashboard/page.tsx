@@ -14,17 +14,16 @@ import {
   PieChart,
   Pie,
   Cell,
-  BarProps, // Import BarProps from recharts
+  BarProps, 
 } from "recharts";
 
-// Define the types for the data we're working with
 interface Investment {
   _id: string;
   profitOrLoss: "profit" | "loss";
   description: string;
   amount: number;
   date: string;
-  profitOrLossAmount: number; // Added property
+  profitOrLossAmount: number; 
 }
 
 interface InvestmentData {
@@ -32,23 +31,30 @@ interface InvestmentData {
   value: number;
 }
 
-// Define a type for the accumulator in reduce
 interface InvestmentCategoryAccumulator {
-  [key: string]: number; // Dynamic keys of type string with values of type number
+  [key: string]: number;
 }
 
-const COLORS = [
-  "hsl(var(--chart-1))",
-  "hsl(var(--chart-2))",
-  "hsl(var(--chart-3))",
-  "hsl(var(--chart-4))",
-];
+interface CustomBarShapeProps {
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  payload?: {
+    profitLoss: number;
+    month: string;
+  };
+  fill?: string;
+}
 
-// Custom shape component for bars
-const CustomBarShape = (props: BarProps) => {
-  const { x, y, width, height, payload } = props; // Access props directly
-  const value = payload.profitLoss; // Get the value from payload
-  const fillColor = value < 0 ? "red" : "green"; // Determine color based on value
+const CustomBarShape = (props: CustomBarShapeProps) => {
+  const { x, y, width, height, payload } = props;
+  
+  if (!x || !y || !width || !height || !payload) {
+    return null;
+  }
+  const value = payload.profitLoss;
+  const fillColor = value < 0 ? "red" : "green";
 
   return (
     <rect
@@ -60,6 +66,29 @@ const CustomBarShape = (props: BarProps) => {
     />
   );
 };
+
+const COLORS = [
+  "hsl(var(--chart-1))",
+  "hsl(var(--chart-2))",
+  "hsl(var(--chart-3))",
+  "hsl(var(--chart-4))",
+];
+
+// const CustomBarShape = (props: BarProps) => {
+//   const { x, y, width, height, payload } = props; 
+//   const value = payload.profitLoss; 
+//   const fillColor = value < 0 ? "red" : "green"; 
+
+//   return (
+//     <rect
+//       x={x}
+//       y={y}
+//       width={width}
+//       height={height}
+//       fill={fillColor}
+//     />
+//   );
+// };
 
 export default function DashboardPage() {
   const [totalProfit, setTotalProfit] = useState<number>(0);
@@ -82,25 +111,22 @@ export default function DashboardPage() {
         );
         const investments = response.data;
 
-        // Calculate total profit and loss
         const profit = investments
           .filter((inv) => inv.profitOrLoss === "profit")
           .reduce((sum, inv) => sum + inv.profitOrLossAmount, 0);
         const loss = investments
           .filter((inv) => inv.profitOrLoss === "loss")
-          .reduce((sum, inv) => sum + Math.abs(inv.profitOrLossAmount), 0); // Only sum absolute values of losses
+          .reduce((sum, inv) => sum + Math.abs(inv.profitOrLossAmount), 0); 
         const investmentAmount = investments.reduce(
           (sum, inv) => sum + inv.amount,
           0
         );
 
-        // Set dynamic data
         setTotalProfit(profit);
         setTotalLoss(loss);
         setTotalInvestment(investmentAmount);
         setCurrentBalance(profit + investmentAmount - loss);
 
-        // Prepare data for charts
         const balanceData = investments.map((inv) => ({
           month: new Date(inv.date).toLocaleString("default", {
             month: "short",
@@ -120,9 +146,8 @@ export default function DashboardPage() {
         }));
         setProfitLossData(profitLossData);
 
-        // Update this part to define the accumulator type correctly
         const investmentData = investments.reduce<InvestmentCategoryAccumulator>((acc, inv) => {
-          const category = inv.description || "Others"; // Use description or "Others" as fallback
+          const category = inv.description || "Others"; 
           if (!acc[category]) {
             acc[category] = 0;
           }
@@ -202,7 +227,7 @@ export default function DashboardPage() {
                 <Bar
                   dataKey="profitLoss"
                   fill="hsl(var(--chart-1))"
-                  shape={<CustomBarShape />} // Use CustomBarShape component here
+                  shape={<CustomBarShape />}
                 />
               </BarChart>
             </ResponsiveContainer>
