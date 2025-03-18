@@ -24,16 +24,20 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
 
   const api = axios.create({
-    baseURL: 'http://localhost:5000' // Add this
+    baseURL: 'http://localhost:5000' 
   });
   
-
   useEffect(() => {
     const loadProfile = async () => {
       try {
         const { data } = await api.get<Profile>('/api/profile');
         setProfile(data);
-        reset(data);
+        
+        reset({
+          name: data.name,
+          email: data.email
+        });
+        
         setPreview(data.profilePicture);
       } catch (error) {
         console.error('Loading failed:', error);
@@ -59,7 +63,7 @@ const ProfilePage = () => {
     formData.append('name', data.name);
     formData.append('email', data.email);
     
-    if (data.profilePicture[0]) {
+    if (data.profilePicture && data.profilePicture.length > 0) {
       formData.append('profilePicture', data.profilePicture[0]);
     }
 
@@ -130,14 +134,14 @@ const ProfilePage = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white  mb-1">
+            <label className="block text-sm font-medium text-white mb-1">
               Email Address
               <input
                 type="email"
                 {...register('email', { 
                   required: 'Email is required',
                   pattern: {
-                    value:  /^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/,
+                    value: /^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/,
                     message: 'Invalid email address'
                   }
                 })} 
